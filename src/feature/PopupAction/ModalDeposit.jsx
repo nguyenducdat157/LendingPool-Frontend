@@ -1,4 +1,7 @@
+import { useWeb3React } from "@web3-react/core";
+import { useSmartContact } from "hooks/useSmartContract";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -11,9 +14,30 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import { ACTION } from "utils/actionType";
 import { formatAmount } from "utils/format";
 
 export default function ModalDeposit({ show, onToggle }) {
+  const { account } = useWeb3React();
+  const { modalAction } = useSelector((s) => s.common);
+  const {
+    depositAave,
+    depositCompound,
+    withdrawAave,
+    withdrawCompound,
+    borrowAave,
+    borrowCompound,
+    repayAave,
+    repayCompound,
+  } = useSmartContact();
+
+  function capitalize(word) {
+    const lower = word.toLowerCase();
+    return word.charAt(0).toUpperCase() + lower.slice(1);
+  }
+
+  const typeAction = capitalize(modalAction.split("_")[0]);
+  const typeLending = modalAction.split("_")[1];
   const closeBtn = (
     <button className="close" onClick={onToggle}>
       &times;
@@ -24,8 +48,24 @@ export default function ModalDeposit({ show, onToggle }) {
     setValue(1000);
   };
 
-  const onSubmit = (value) => {
-    console.log(value);
+  const onSubmit = async (value) => {
+    if (modalAction === ACTION.DEPOSIT_AAVE) {
+      await depositAave(value);
+    } else if (modalAction === ACTION.DEPOSIT_COMPOUND) {
+      await depositCompound(value);
+    } else if (modalAction === ACTION.WITHDRAW_AAVE) {
+      await withdrawAave(value);
+    } else if (modalAction === ACTION.WITHDRAW_COMPOUND) {
+      await withdrawCompound(value);
+    } else if (modalAction === ACTION.BORROW_AAVE) {
+      await borrowAave(value);
+    } else if (modalAction === ACTION.BORROW_COMPOUND) {
+      await borrowCompound(value);
+    } else if (modalAction === ACTION.REPAY_AAVE) {
+      await repayAave(value);
+    } else if (modalAction === ACTION.REPAY_COMPOUND) {
+      await repayCompound(value);
+    }
   };
 
   useEffect(() => {
@@ -36,7 +76,7 @@ export default function ModalDeposit({ show, onToggle }) {
   return (
     <Modal isOpen={show} toggle={onToggle} centered>
       <ModalHeader toggle={onToggle} close={closeBtn}>
-        Deposit
+        {typeAction}
       </ModalHeader>
       <ModalBody>
         <Row className="justify-content-center">
@@ -57,11 +97,11 @@ export default function ModalDeposit({ show, onToggle }) {
             </InputGroup>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col>
             You balance: <b>{formatAmount.format(1000)}</b> MATIC
           </Col>
-        </Row>
+        </Row> */}
       </ModalBody>
       <ModalFooter>
         <Button
@@ -71,7 +111,7 @@ export default function ModalDeposit({ show, onToggle }) {
             onSubmit(value);
           }}
         >
-          Deposit
+          {typeAction}
         </Button>{" "}
         <Button color="secondary" onClick={onToggle}>
           Cancel

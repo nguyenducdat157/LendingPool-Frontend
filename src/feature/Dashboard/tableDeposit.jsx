@@ -1,17 +1,19 @@
-import * as React from "react";
+import { Button, Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Button, FormControlLabel, Switch, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import * as React from "react";
 import { useDispatch } from "react-redux";
-import { toggleModalDeposit } from "store/common.reducer";
+import { setModalAction, toggleModalDeposit } from "store/common.reducer";
+import { ACTION } from "utils/actionType";
+import ETHLogo from "../../asset/eth-logo.png";
 
-export default function TableDeposit({ token, balance, apy, collecteral }) {
+export default function TableDeposit({ token, balance, apy, lending }) {
   const dispatch = useDispatch();
   return (
     <TableContainer component={Paper}>
@@ -21,13 +23,19 @@ export default function TableDeposit({ token, balance, apy, collecteral }) {
             <TableCell>Your deposit</TableCell>
             <TableCell align="center">Current balance</TableCell>
             <TableCell align="center">APY</TableCell>
-            <TableCell align="center">Collateral</TableCell>
+            {/* <TableCell align="center">Collateral</TableCell> */}
             <TableCell align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
             <TableCell component="th" scope="row">
+              <img
+                src={ETHLogo}
+                height={20}
+                width={20}
+                style={{ marginRight: "15px" }}
+              />
               {token}
             </TableCell>
             <TableCell align="center">
@@ -45,26 +53,50 @@ export default function TableDeposit({ token, balance, apy, collecteral }) {
                 {apy} %
               </Typography>
             </TableCell>
-            <TableCell align="center">
+            {/* <TableCell align="center">
               {" "}
               <FormControlLabel
                 control={<Switch checked={collecteral} />}
                 label={collecteral ? "Yes" : "No"}
                 color="success"
               />
-            </TableCell>
+            </TableCell> */}
             <TableCell align="right">
-              <Box sx={{ display: "flex", justifyContent: "end" }}>
+              <Box>
                 <Button
                   variant="contained"
-                  sx={{ background: "#2b2d3c" }}
+                  sx={{ background: "#2b2d3c", minWidth: "60px" }}
                   onClick={() => {
                     dispatch(toggleModalDeposit());
+                    if (lending === "AAVE") {
+                      dispatch(setModalAction(ACTION.DEPOSIT_AAVE));
+                    } else {
+                      dispatch(setModalAction(ACTION.DEPOSIT_COMPOUND));
+                    }
                   }}
                 >
                   Deposit
                 </Button>
-                <Button sx={{ color: "#2b2d3c" }}>Withdraw</Button>
+                <Button
+                  onClick={() => {
+                    dispatch(toggleModalDeposit());
+                    if (lending === "AAVE") {
+                      dispatch(setModalAction(ACTION.WITHDRAW_AAVE));
+                    } else {
+                      dispatch(setModalAction(ACTION.WITHDRAW_COMPOUND));
+                    }
+                  }}
+                  sx={{
+                    color: "#2b2d3c",
+                    // marginLeft: "auto",
+                    ":hover": {
+                      border: "1px solid #2b2d3c",
+                      minWidth: "60px",
+                    },
+                  }}
+                >
+                  Withdraw
+                </Button>
               </Box>
             </TableCell>
           </TableRow>

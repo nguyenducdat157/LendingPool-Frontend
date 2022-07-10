@@ -1,15 +1,20 @@
-import * as React from "react";
+import { Button, Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Button, FormControlLabel, Switch, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import * as React from "react";
+import { useDispatch } from "react-redux";
+import { setModalAction, toggleModalDeposit } from "store/common.reducer";
+import { ACTION } from "utils/actionType";
+import DAILogo from "../../asset/dai-logo.png";
 
-export default function TableBorrow({ token, borrowed, apy, apyType }) {
+export default function TableBorrow({ token, borrowed, apy, lending }) {
+  const dispatch = useDispatch();
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -18,13 +23,19 @@ export default function TableBorrow({ token, borrowed, apy, apyType }) {
             <TableCell>Your Borrow</TableCell>
             <TableCell align="center">Borrowed</TableCell>
             <TableCell align="center">APY</TableCell>
-            <TableCell align="center">APY Varaiable</TableCell>
+            {/* <TableCell align="center">APY Varaiable</TableCell> */}
             <TableCell align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
             <TableCell component="th" scope="row">
+              <img
+                src={DAILogo}
+                height={20}
+                width={20}
+                style={{ marginRight: "15px" }}
+              />
               {token}
             </TableCell>
             <TableCell align="center">
@@ -42,19 +53,49 @@ export default function TableBorrow({ token, borrowed, apy, apyType }) {
                 {apy} %
               </Typography>
             </TableCell>
-            <TableCell align="center">
+            {/* <TableCell align="center">
               {" "}
               <FormControlLabel
                 control={<Switch checked={apyType} />}
                 label={"Varaiable"}
               />
-            </TableCell>
+            </TableCell> */}
             <TableCell align="right">
-              <Box sx={{ display: "flex", justifyContent: "end" }}>
-                <Button variant="contained" sx={{ background: "#2b2d3c" }}>
+              <Box>
+                <Button
+                  variant="contained"
+                  sx={{ background: "#2b2d3c", minWidth: "60px" }}
+                  onClick={() => {
+                    dispatch(toggleModalDeposit());
+                    if (lending === "AAVE") {
+                      dispatch(setModalAction(ACTION.BORROW_AAVE));
+                    } else {
+                      dispatch(setModalAction(ACTION.BORROW_COMPOUND));
+                    }
+                  }}
+                >
                   Borrow
                 </Button>
-                <Button sx={{ color: "#2b2d3c" }}>Repay</Button>
+                <Button
+                  onClick={() => {
+                    dispatch(toggleModalDeposit());
+                    if (lending === "AAVE") {
+                      dispatch(setModalAction(ACTION.REPAY_AAVE));
+                    } else {
+                      dispatch(setModalAction(ACTION.REPAY_COMPOUND));
+                    }
+                  }}
+                  sx={{
+                    color: "#2b2d3c",
+                    // marginLeft: "auto",
+                    ":hover": {
+                      border: "1px solid #2b2d3c",
+                      minWidth: "60px",
+                    },
+                  }}
+                >
+                  Repay
+                </Button>
               </Box>
             </TableCell>
           </TableRow>

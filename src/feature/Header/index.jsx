@@ -6,19 +6,19 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useWeb3React } from "@web3-react/core";
+import { useEagerConnect, useInactiveListener } from "hooks/listener";
 import * as React from "react";
-import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
+
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import { connect, disconnect } from "store/common.reducer";
 import { injected, walletConnect } from "utils/connect";
-import { useDispatch } from "react-redux";
-import { toggleModalDeposit } from "store/common.reducer";
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const dispatch = useDispatch();
+  // const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -28,16 +28,21 @@ const Header = () => {
     setAnchorElNav(null);
   };
 
-  const handleDeposit = () => {
-    dispatch(toggleModalDeposit());
-  };
-
   const { account, activate, deactivate } = useWeb3React();
   const [modal, setModal] = React.useState(false);
+  const dispatch = useDispatch();
   const toggle = (connector) => {
     connector && !connector?.target && activate(connector);
     setModal(!modal);
+    // localStorage.setItem("connected", true);
+    dispatch(connect());
   };
+
+  const { connected } = useSelector((s) => s.common);
+
+  const triedEager = useEagerConnect();
+
+  useInactiveListener(!triedEager);
 
   const ModalConnect = () => {
     return (
@@ -72,7 +77,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ background: "#2B2D3C" }}>
+    <AppBar position="static" sx={{ background: "#000" }}>
       <ModalConnect />
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -124,12 +129,37 @@ const Header = () => {
                 display: { xs: "block", md: "none" },
               }}
             >
-              <MenuItem onClick={handleDeposit}>
-                <Typography textAlign="center">DEPOSIT</Typography>
-              </MenuItem>
-              <MenuItem onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">BORROW</Typography>
-              </MenuItem>
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/aave"
+                sx={{
+                  mr: 2,
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                AAVE
+              </Typography>
+
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/compound"
+                sx={{
+                  mr: 2,
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                COMPOUND
+              </Typography>
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
@@ -152,22 +182,41 @@ const Header = () => {
             LENDING POOL
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Button
-              onClick={handleDeposit}
-              sx={{ my: 2, color: "white", display: "block" }}
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="/aave"
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                color: "inherit",
+                textDecoration: "none",
+              }}
             >
-              DEPOSIT
-            </Button>
-            <Button
-              onClick={handleCloseNavMenu}
-              sx={{ my: 2, color: "white", display: "block" }}
+              AAVE
+            </Typography>
+
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="/compound"
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                color: "inherit",
+                textDecoration: "none",
+              }}
             >
-              WITHDRAW
-            </Button>
+              COMPOUND
+            </Typography>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            {account ? (
+            {account && connected ? (
               <Box
                 sx={{
                   display: "flex",
@@ -182,6 +231,8 @@ const Header = () => {
                   variant="contained"
                   onClick={() => {
                     deactivate();
+                    // localStorage.setItem("connected", false);
+                    dispatch(disconnect());
                   }}
                 >
                   Disconnect

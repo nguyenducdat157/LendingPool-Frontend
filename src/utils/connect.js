@@ -2,7 +2,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
 // Connect wallet
-export const injected = new InjectedConnector({ supportedChainIds: [4] });
+export const injected = new InjectedConnector({ supportedChainIds: [4, 42] });
 export const walletConnect = new WalletConnectConnector({
   rpc: {
     4: "https://rinkeby.infura.io/v3/edc067050c394f3e889be5490129706b",
@@ -15,6 +15,7 @@ export const SC_WETH = "0xc778417E063141139Fce010982780140Aa0cD5Ab";
 export const SC_MasterChef = "0x9da687e88b0A807e57f1913bCD31D56c49C872c2";
 export const SC_DD2 = "0xb1745657CB84c370DD0Db200a626d06b28cc5872";
 export const SC_MULTICALL = "0x42ad527de7d4e9d9d011ac45b31d8551f8fe9821";
+export const SC_GATEWAY = "0xb3E68d157a7C6d5876A9106386cA7beF7FB970E8";
 
 // Chain
 export const CHAIN_LIST = {
