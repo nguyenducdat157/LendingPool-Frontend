@@ -23,11 +23,7 @@
     "inputs": [],
     "name": "AAVE",
     "outputs": [
-      {
-        "internalType": "contract ILendingPoolAave",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract ILendingPool", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -105,12 +101,23 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    "inputs": [],
+    "name": "dataProvider",
+    "outputs": [
+      {
+        "internalType": "contract AaveProtocolDataProvider",
+        "name": "",
+        "type": "address"
+      }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "depositAave",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -125,7 +132,7 @@
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "repayAave",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

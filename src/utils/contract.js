@@ -4,12 +4,16 @@ import ABI_MasterChef from "../ABI/MasterChef.json";
 import ABI_WETH from "../ABI/WETH.json";
 import ABI_MULTICALL from "../ABI/Multicall.json";
 import ABI_GATEWAY from "../ABI/AaveGateway.json";
+import ABI_CETH from "../ABI/CDai.json";
+import ABI_CDAI from "../ABI/CEth.json";
 import {
   SC_GATEWAY,
   SC_DD2,
   SC_MasterChef,
   SC_MULTICALL,
   SC_WETH,
+  SC_CDAI,
+  SC_CETH,
 } from "./connect";
 
 export const getContractWETH = (library) => {
@@ -30,6 +34,14 @@ export const getContractMulticall = (library) => {
 
 export const getContractGateWay = (library) => {
   return new Contract(SC_GATEWAY, ABI_GATEWAY, library.getSigner());
+};
+
+export const getContractCEth = (library) => {
+  return new Contract(SC_CETH, ABI_CETH, library.getSigner());
+};
+
+export const getContractCDai = (library) => {
+  return new Contract(SC_CDAI, ABI_CDAI, library.getSigner());
 };
 
 export const ROUTES = {

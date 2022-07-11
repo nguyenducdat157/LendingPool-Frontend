@@ -15,6 +15,7 @@ import DAILogo from "../../asset/dai-logo.png";
 
 export default function TableBorrow({ token, borrowed, apy, lending }) {
   const dispatch = useDispatch();
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -42,15 +43,15 @@ export default function TableBorrow({ token, borrowed, apy, lending }) {
               {" "}
               <Box>
                 <Typography fontWeight={"bold"} fontSize={"20px"}>
-                  {borrowed}
+                  {Math.round(borrowed * 10000) / 10000} DAI
                 </Typography>
-                <Typography fontSize={"13px"}>${borrowed / 2000}</Typography>
+                {/* <Typography fontSize={"13px"}>${borrowed / 2000}</Typography> */}
               </Box>
             </TableCell>
             <TableCell align="center">
               {" "}
               <Typography fontWeight={"bold"} fontSize={"20px"}>
-                {apy} %
+                {Math.round(apy * 100) / 100} %
               </Typography>
             </TableCell>
             {/* <TableCell align="center">

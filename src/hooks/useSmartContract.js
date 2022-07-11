@@ -1,19 +1,25 @@
-import { formatEther, parseUnits } from "@ethersproject/units";
+import { formatEther, formatUnits, parseUnits } from "@ethersproject/units";
 import { useWeb3React } from "@web3-react/core";
-import { useEffect } from "react";
+import { ethers } from "ethers";
 import { useDispatch } from "react-redux";
+import { useAsync } from "react-use";
+import { closeLoading, setLoading } from "store/common.reducer";
 import {
   setLVT,
   setTotalDeposit,
   setYourBorrow,
   setYourColateral,
 } from "store/contract.reducer";
-import { getContractGateWay } from "utils/contract";
-import { ethers } from "ethers";
-import { closeLoading, setLoading } from "store/common.reducer";
+import {
+  getContractCDai,
+  getContractCEth,
+  getContractGateWay,
+} from "utils/contract";
 
 export function useSmartContact() {
   const { account, library } = useWeb3React();
+  // const [supplyApyCompound, setSupplyApyCompound] = useState(0);
+  // const [borrowApyCompound, setBorrowApyCompound] = useState(0);
   const dispatch = useDispatch();
   const getInfo = async () => {
     if (!account || !library) return;
@@ -31,10 +37,13 @@ export function useSmartContact() {
 
   const depositAave = async (amount) => {
     // setHarvesting(true);
+    const overrides = {
+      value: ethers.utils.parseEther(amount, "ether"), //sending one ether
+    };
     const gatewayContract = getContractGateWay(library);
     dispatch(setLoading());
     await gatewayContract
-      .depositAave(parseUnits(amount, 18))
+      .depositAave(overrides)
       .then(async (res) => {
         await res.wait();
         console.log("Deposit aave success!");
@@ -168,6 +177,52 @@ export function useSmartContact() {
       });
   };
 
+  const { value: apyCompound = {} } = useAsync(async () => {
+    if (library) {
+      const CEthContract = getContractCEth(library);
+      const CDaiContract = getContractCDai(library);
+      const ethMantissa = 1e18;
+      const blocksPerDay = 6570; // 13.15 seconds per block
+      const daysPerYear = 365;
+
+      const supplyRatePerBlock = await CEthContract.supplyRatePerBlock();
+      const borrowRatePerBlock = await CDaiContract.borrowRatePerBlock();
+      const supplyApy =
+        (Math.pow(
+          (supplyRatePerBlock / ethMantissa) * blocksPerDay + 1,
+          daysPerYear
+        ) -
+          1) *
+        100;
+      const borrowApy =
+        (Math.pow(
+          (borrowRatePerBlock / ethMantissa) * blocksPerDay + 1,
+          daysPerYear
+        ) -
+          1) *
+        100;
+
+      // setSupplyApyCompound(supplyApy);
+      // setBorrowApyCompound(borrowApy);
+      return { supplyApy, borrowApy };
+    }
+  }, [library]);
+
+  const { value: supplyBalanceCompound = 0 } = useAsync(async () => {
+    const CEthContract = getContractCEth(library);
+    const supplyBalance = formatUnits(
+      await CEthContract.callStatic.balanceOfUnderlying(account)
+    );
+    return supplyBalance;
+  }, [library]);
+
+  const { value: borrowBalanceCompound = 0 } = useAsync(async () => {
+    const CDaiContract = getContractCDai(library);
+    const borrowBalance = formatUnits(
+      await CDaiContract.callStatic.borrowBalanceCurrent(account)
+    );
+    return borrowBalance;
+  }, [library]);
   // const depositAave = (amount) => {};
 
   // useEffect(() => {
@@ -183,5 +238,10 @@ export function useSmartContact() {
     borrowCompound,
     repayAave,
     repayCompound,
+    // supplyApyCompound,
+    // borrowApyCompound,
+    apyCompound,
+    supplyBalanceCompound,
+    borrowBalanceCompound,
   };
 }

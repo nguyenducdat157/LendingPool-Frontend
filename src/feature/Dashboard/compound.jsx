@@ -22,6 +22,8 @@ const Compound = () => {
   //   (s) => s.contract
   // );
   const { connected } = useSelector((s) => s.common);
+  const { apyCompound, supplyBalanceCompound, borrowBalanceCompound } =
+    useSmartContact();
 
   return (
     <Stack>
@@ -60,7 +62,7 @@ const Compound = () => {
                 Supply Balance
               </Typography>
               <Typography sx={{ color: "#fff", fontSize: "1.6rem" }}>
-                $7906060505
+                {Math.round(supplyBalanceCompound * 1000000) / 1000000} ETH
               </Typography>
             </Box>
             <Box
@@ -100,7 +102,7 @@ const Compound = () => {
                 Borrow Balance
               </Typography>
               <Typography sx={{ color: "#fff", fontSize: "1.6rem" }}>
-                $7906060505
+                {Math.round(borrowBalanceCompound * 1000000) / 1000000} DAI
               </Typography>
             </Box>
           </Box>
@@ -113,16 +115,16 @@ const Compound = () => {
               <Grid item xs={6}>
                 <TableDeposit
                   token="ETH"
-                  balance={2020.33}
-                  apy={5.7}
+                  balance={supplyBalanceCompound}
+                  apy={apyCompound?.supplyApy}
                   lending={"COMPOUND"}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TableBorrow
                   token="DAI"
-                  borrowed={2020.33}
-                  apy={5.7}
+                  borrowed={borrowBalanceCompound}
+                  apy={apyCompound?.borrowApy}
                   lending={"COMPOUND"}
                 />
               </Grid>

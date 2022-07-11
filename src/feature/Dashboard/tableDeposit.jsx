@@ -41,16 +41,16 @@ export default function TableDeposit({ token, balance, apy, lending }) {
             <TableCell align="center">
               {" "}
               <Box>
-                <Typography fontWeight={"bold"} fontSize={"20px"}>
-                  {balance}
+                <Typography fontSize={"20px"}>
+                  {Math.round(balance * 10000) / 10000} ETH
                 </Typography>
-                <Typography fontSize={"13px"}>${balance / 2000}</Typography>
+                {/* <Typography fontSize={"13px"}>${balance}</Typography> */}
               </Box>
             </TableCell>
             <TableCell align="center">
               {" "}
               <Typography fontWeight={"bold"} fontSize={"20px"}>
-                {apy} %
+                {Math.round(apy * 100) / 100} %
               </Typography>
             </TableCell>
             {/* <TableCell align="center">
