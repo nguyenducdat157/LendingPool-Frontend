@@ -15,7 +15,6 @@ import {
   Row,
 } from "reactstrap";
 import { ACTION } from "utils/actionType";
-import { formatAmount } from "utils/format";
 
 export default function ModalDeposit({ show, onToggle }) {
   const { account } = useWeb3React();
@@ -29,6 +28,8 @@ export default function ModalDeposit({ show, onToggle }) {
     borrowCompound,
     repayAave,
     repayCompound,
+    supplyBalanceCompound,
+    supplyCEthWallet,
   } = useSmartContact();
 
   function capitalize(word) {
@@ -45,7 +46,23 @@ export default function ModalDeposit({ show, onToggle }) {
   );
   const [value, setValue] = useState("");
   const onClickMax = (e) => {
-    setValue(1000);
+    if (modalAction === ACTION.DEPOSIT_AAVE) {
+      setValue();
+    } else if (modalAction === ACTION.DEPOSIT_COMPOUND) {
+      setValue(supplyCEthWallet);
+    } else if (modalAction === ACTION.WITHDRAW_AAVE) {
+      // await withdrawAave(value);
+    } else if (modalAction === ACTION.WITHDRAW_COMPOUND) {
+      setValue(0.8 * supplyBalanceCompound);
+    } else if (modalAction === ACTION.BORROW_AAVE) {
+      // await borrowAave(value);
+    } else if (modalAction === ACTION.BORROW_COMPOUND) {
+      // await borrowCompound(value);
+    } else if (modalAction === ACTION.REPAY_AAVE) {
+      // await repayAave(value);
+    } else if (modalAction === ACTION.REPAY_COMPOUND) {
+      // await repayCompound(value);
+    }
   };
 
   const onSubmit = async (value) => {

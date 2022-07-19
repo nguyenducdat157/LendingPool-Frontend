@@ -1,7 +1,8 @@
+import { Web3Provider } from "@ethersproject/providers";
 import { formatEther, formatUnits, parseUnits } from "@ethersproject/units";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAsync } from "react-use";
 import { closeLoading, setLoading } from "store/common.reducer";
 import {
@@ -18,8 +19,10 @@ import {
 
 export function useSmartContact() {
   const { account, library } = useWeb3React();
+
   // const [supplyApyCompound, setSupplyApyCompound] = useState(0);
   // const [borrowApyCompound, setBorrowApyCompound] = useState(0);
+  const { loading } = useSelector((s) => s.common);
   const dispatch = useDispatch();
   const getInfo = async () => {
     if (!account || !library) return;
@@ -214,7 +217,7 @@ export function useSmartContact() {
       await CEthContract.callStatic.balanceOfUnderlying(account)
     );
     return supplyBalance;
-  }, [library]);
+  }, [library, loading]);
 
   const { value: borrowBalanceCompound = 0 } = useAsync(async () => {
     const CDaiContract = getContractCDai(library);
@@ -222,7 +225,13 @@ export function useSmartContact() {
       await CDaiContract.callStatic.borrowBalanceCurrent(account)
     );
     return borrowBalance;
-  }, [library]);
+  }, [library, loading]);
+
+  const { value: supplyCEthWallet = 0 } = useAsync(async () => {
+    let ethBalance = formatUnits(await library.getBalance(account));
+    return ethBalance;
+  }, [library, loading]);
+
   // const depositAave = (amount) => {};
 
   // useEffect(() => {
@@ -243,5 +252,6 @@ export function useSmartContact() {
     apyCompound,
     supplyBalanceCompound,
     borrowBalanceCompound,
+    supplyCEthWallet,
   };
 }
